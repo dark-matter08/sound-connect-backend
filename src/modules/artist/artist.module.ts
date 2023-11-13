@@ -16,5 +16,6 @@ import { GenreModule } from 'src/core/genre/genre.module';
     UserModule,
     GenreModule,
   ],
+  exports: [ArtistService],
 })
 export class ArtistModule {}

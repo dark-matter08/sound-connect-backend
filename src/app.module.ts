@@ -11,6 +11,8 @@ import { RecordLabelModule } from './modules/record-label/record-label.module';
 import { MulterConfigModule } from './core/multer-config/multer-config.module';
 import { LoggerMiddleware } from './middleware/logger/logger.middleware';
 import { GenreModule } from './core/genre/genre.module';
+import { EventModule } from './modules/event/event.module';
+import { TipingModule } from './modules/tiping/tiping.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { GenreModule } from './core/genre/genre.module';
     RecordLabelModule,
     MulterConfigModule,
     GenreModule,
+    EventModule,
+    TipingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

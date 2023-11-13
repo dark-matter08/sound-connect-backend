@@ -18,6 +18,7 @@ import { RecordLabel } from 'src/modules/record-label/entities/record-label.enti
 import { ApiProperty } from '@nestjs/swagger';
 import { MusicGenre } from 'src/constants';
 import { Genre } from 'src/core/genre/genre.entity';
+import { Tip } from '../../tiping/entities/tip.entity';
 
 @Entity()
 export class Artist {
@@ -45,6 +46,9 @@ export class Artist {
   @ApiProperty()
   @Column({ nullable: true })
   recordLabelId: number;
+
+  @OneToMany(() => Tip, (tip) => tip.artist)
+  tips: Tip[];
 
   @ManyToMany(() => User, (user) => user.following)
   followers: User[];

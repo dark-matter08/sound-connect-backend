@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from 'src/constants';
 import { Artist } from 'src/modules/artist/entities/artist.entity';
+import { Tip } from 'src/modules/tiping/entities/tip.entity';
 import { RecordLabel } from 'src/modules/record-label/entities/record-label.entity';
 import {
   Entity,
@@ -11,6 +12,7 @@ import {
   UpdateDateColumn,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -46,6 +48,9 @@ export class User {
   @ApiProperty()
   @Column({ nullable: true })
   recordLabelId: number;
+
+  @OneToMany(() => Tip, (tip) => tip.sender)
+  tips: Tip[];
 
   @ManyToMany(() => Artist, { cascade: true })
   @JoinTable()
