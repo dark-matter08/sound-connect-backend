@@ -10,12 +10,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Song } from './song.entity';
 import { Album } from './album.entity';
 import { RecordLabel } from 'src/modules/record-label/entities/record-label.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { MusicGenre } from 'src/constants';
+import { Genre } from 'src/core/genre/genre.entity';
 
 @Entity()
 export class Artist {
@@ -31,13 +33,10 @@ export class Artist {
   @Column()
   stageName: string;
 
-  @ApiProperty()
-  @Column({
-    type: 'enum',
-    enum: MusicGenre,
-    default: MusicGenre.POP,
-  })
-  genre: MusicGenre;
+  // @ApiProperty()
+  @ManyToMany(() => Genre, { cascade: true })
+  @JoinTable()
+  genres: Genre[];
 
   @ApiProperty()
   @Column({ type: 'text', nullable: true })

@@ -9,10 +9,14 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Artist } from './artist.entity';
 import { Song } from './song.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { MusicGenre } from 'src/constants';
+import { Genre } from 'src/core/genre/genre.entity';
 
 @Entity()
 export class Album {
@@ -26,7 +30,7 @@ export class Album {
 
   @ApiProperty()
   @Column({ nullable: true })
-  albumId: number;
+  artistId: number;
 
   @ApiProperty()
   @Column({ nullable: true })
@@ -35,6 +39,11 @@ export class Album {
   @ApiProperty()
   @Column({ nullable: true })
   bio: string;
+
+  @ApiProperty()
+  @ManyToMany(() => Genre, { cascade: true })
+  @JoinTable()
+  genres: Genre[];
 
   // @ApiProperty()
   @ManyToOne(() => Artist, (artist) => artist.albums)

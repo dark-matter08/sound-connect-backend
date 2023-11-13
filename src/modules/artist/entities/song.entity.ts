@@ -8,10 +8,14 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Artist } from './artist.entity';
 import { Album } from './album.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { ContentType, MusicGenre } from 'src/constants';
+import { Genre } from 'src/core/genre/genre.entity';
 
 @Entity()
 export class Song {
@@ -34,6 +38,15 @@ export class Song {
   @ApiProperty()
   @Column({ nullable: true })
   albumId: number;
+
+  @ApiProperty()
+  @Column({ type: 'enum', enum: ContentType, default: ContentType.FREE })
+  contentType: ContentType;
+
+  @ApiProperty()
+  @ManyToMany(() => Genre, { cascade: true })
+  @JoinTable()
+  genres: Genre[];
 
   // @ApiProperty()
   @ManyToOne(() => Artist, (artist) => artist.songs)

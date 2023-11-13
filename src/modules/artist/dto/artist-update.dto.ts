@@ -1,18 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { MusicGenre } from 'src/constants';
+import { Genre } from 'src/core/genre/genre.entity';
 
-export class ArtistAddDto {
+export class ArtistUpdateDto {
   @ApiProperty()
-  @IsNotEmpty()
   stageName: string;
 
   @ApiProperty({ example: [1, 2] })
-  @IsNotEmpty()
   genreIds: number[];
 
   @ApiProperty()
-  @IsNotEmpty()
   bio: string;
 
   @ApiProperty()

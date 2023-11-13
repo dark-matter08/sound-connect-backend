@@ -41,3 +41,8 @@ export enum MusicGenre {
   K_POP = 'K-Pop',
   J_POP = 'J-Pop',
 }
+
+export enum ContentType {
+  PAID = 'PAID',
+  FREE = 'FREE',
+}

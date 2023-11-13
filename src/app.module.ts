@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { RecordLabelModule } from './modules/record-label/record-label.module';
 import { MulterConfigModule } from './core/multer-config/multer-config.module';
 import { LoggerMiddleware } from './middleware/logger/logger.middleware';
+import { GenreModule } from './core/genre/genre.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { LoggerMiddleware } from './middleware/logger/logger.middleware';
     UserModule,
     RecordLabelModule,
     MulterConfigModule,
+    GenreModule,
   ],
   controllers: [AppController],
   providers: [AppService],

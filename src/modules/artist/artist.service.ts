@@ -13,13 +13,16 @@ import { Song } from './entities/song.entity';
 import { Album } from './entities/album.entity';
 import { RecordLabel } from '../record-label/entities/record-label.entity';
 import { User } from '../user/entities/user.entity';
-import { Role } from 'src/constants';
+import { MusicGenre, Role } from 'src/constants';
 import { UserService } from '../user/user.service';
+import { ArtistAddDto } from './dto/artist-add.dto';
+import { GenreService } from 'src/core/genre/genre.service';
 
 @Injectable()
 export class ArtistService {
   constructor(
     private userService: UserService,
+    private genreService: GenreService,
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
     @InjectRepository(Album)
@@ -46,7 +49,22 @@ export class ArtistService {
     });
   }
 
-  async create(user: User, artistData: Partial<Artist>): Promise<Artist> {
+  async findByGenre(genreId: number): Promise<Artist[]> {
+    return this.artistRepository.find({
+      where: {
+        genres: { id: genreId },
+      },
+      relations: {
+        user: true,
+        songs: true,
+        albums: true,
+        recordLabel: true,
+        genres: true,
+      },
+    });
+  }
+
+  async create(user: User, artistData: ArtistAddDto): Promise<Artist> {
     const existingArtist = await this.artistRepository.findOne({
       where: {
         userId: user.id,
@@ -59,20 +77,28 @@ export class ArtistService {
       );
     }
 
-    const newArtist = await this.artistRepository.save({
-      userId: user.id,
-      stageName: artistData.stageName,
-      genre: artistData.genre,
-      bio: artistData.bio,
-      recordLabelId: artistData.recordLabelId,
-    });
+    const artist = new Artist();
+    artist.userId = user.id;
+    artist.stageName = artistData.stageName;
+    (artist.bio = artistData.bio),
+      (artist.recordLabelId = artistData.recordLabelId);
 
-    user.artistId = newArtist.id;
+    const genres = [];
+    for (const genreId of artistData.genreIds) {
+      const genre = await this.genreService.findGenreById(genreId);
+      genres.push(genre);
+    }
+
+    artist.genres = genres;
+
+    const finArtist = await this.artistRepository.save(artist);
+
+    user.artistId = artist.id;
     user.role = Role.ARTIST;
 
     await this.userService.update(user);
 
-    return newArtist;
+    return finArtist;
   }
 
   async update(
@@ -87,7 +113,7 @@ export class ArtistService {
     });
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: number): Promise<Artist> {
     const artist = await this.artistRepository.findOne({
       where: {
         id,
@@ -96,21 +122,9 @@ export class ArtistService {
     if (!artist) {
       throw new NotFoundException(`Artist with ID ${id} not found`);
     }
-    await this.artistRepository.remove(artist);
-  }
+    const deletedArtist = await this.artistRepository.remove(artist);
 
-  // Additional Functions:
-
-  async getArtistSongs(id: number): Promise<Song[]> {
-    const artist = await this.artistRepository.findOne({
-      where: {
-        id,
-      },
-      relations: {
-        songs: true,
-      },
-    });
-    return artist ? artist.songs : [];
+    return deletedArtist;
   }
 
   async getArtistAlbums(id: number): Promise<Album[]> {
@@ -118,11 +132,17 @@ export class ArtistService {
       where: {
         id,
       },
-      relations: {
-        albums: true,
+    });
+
+    if (!artist) {
+      throw new NotFoundException(`Artist with ID ${id} not found`);
+    }
+
+    return this.albumRepository.find({
+      where: {
+        artistId: id,
       },
     });
-    return artist ? artist.albums : [];
   }
 
   async getArtistRecordLabel(id: number): Promise<RecordLabel | undefined> {
@@ -135,6 +155,26 @@ export class ArtistService {
       },
     });
     return artist ? artist.recordLabel : undefined;
+  }
+
+  // Additional Functions:
+
+  async getArtistSongs(id: number): Promise<Song[]> {
+    const artist = await this.artistRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!artist) {
+      throw new NotFoundException(`Artist with ID ${id} not found`);
+    }
+
+    return this.songRepository.find({
+      where: {
+        artistId: id,
+      },
+    });
   }
 
   //
@@ -152,10 +192,13 @@ export class ArtistService {
       throw new NotFoundException(`Artist with ID ${artistId} not found`);
     }
 
-    const album = this.albumRepository.create(albumData);
-    album.artist = artist;
+    const newAlbum = this.albumRepository.save({
+      title: albumData.title,
+      bio: albumData.bio,
+      artistId: artistId,
+    });
 
-    return await this.albumRepository.save(album);
+    return newAlbum;
   }
 
   async addSong(
