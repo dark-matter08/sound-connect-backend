@@ -29,7 +29,7 @@ export class AccessTokenStrategy extends PassportStrategy(
   }
 
   async validate(payload: JWtPayload): Promise<User> {
-    const user = await this.userService.findById(payload.id, payload.role);
+    const user = await this.userService.findById(payload.sub, payload.role);
     if (!user) {
       throw new HttpException('user not found', HttpStatus.NOT_ACCEPTABLE);
     }
