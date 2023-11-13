@@ -10,3 +10,8 @@ export interface JWtPayload {
   role: Role;
   name: string;
 }
+
+export interface JWTResponse {
+  accessToken: string;
+  refreshToken?: string;
+}

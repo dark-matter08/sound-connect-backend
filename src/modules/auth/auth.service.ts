@@ -7,6 +7,8 @@ import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { User } from '../user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { JWTResponse } from 'src/constants';
+import { isValidPhoneNumber } from 'src/utils';
 @Injectable()
 export class AuthService {
   constructor(
@@ -14,7 +16,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(phoneEmail: string, password: string): Promise<any> {
+  async login(phoneEmail: string, password: string): Promise<JWTResponse> {
     const user = await this.userService.findUser(phoneEmail);
 
     if (!user) {
@@ -32,7 +34,7 @@ export class AuthService {
     return token;
   }
 
-  async generateToken(user: User) {
+  async generateToken(user: User): Promise<JWTResponse> {
     return {
       accessToken: this.jwtService.sign({
         name: user.name,
@@ -40,5 +42,20 @@ export class AuthService {
         role: user.role,
       }),
     };
+  }
+
+  async register(
+    name: string,
+    email: string,
+    phone: string,
+    password: string,
+  ): Promise<User> {
+    if (!isValidPhoneNumber(phone)) {
+      throw new BadRequestException('invalid phone number');
+    }
+
+    const user = await this.userService.create(name, email, phone, password);
+
+    return user;
   }
 }
