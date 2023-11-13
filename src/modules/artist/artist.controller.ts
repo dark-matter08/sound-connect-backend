@@ -29,7 +29,7 @@ import { Album } from './entities/album.entity';
 import { AlbumAddDto } from './dto/album-add.dto';
 import { ArtistUpdateDto } from './dto/artist-update.dto';
 
-@ApiTags('Artist Endpoints')
+@ApiTags('Artist')
 @Controller('artist')
 export class ArtistController {
   constructor(private artistService: ArtistService) {}

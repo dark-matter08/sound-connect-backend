@@ -13,6 +13,8 @@ import { LoggerMiddleware } from './middleware/logger/logger.middleware';
 import { GenreModule } from './core/genre/genre.module';
 import { EventModule } from './modules/event/event.module';
 import { TipingModule } from './modules/tiping/tiping.module';
+import { BalanceModule } from './core/balance/balance.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { TipingModule } from './modules/tiping/tiping.module';
     GenreModule,
     EventModule,
     TipingModule,
+    BalanceModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

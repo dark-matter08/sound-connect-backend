@@ -19,6 +19,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { MusicGenre } from 'src/constants';
 import { Genre } from 'src/core/genre/genre.entity';
 import { Tip } from '../../tiping/entities/tip.entity';
+import { Bid } from 'src/modules/event/entities/bid.entity';
 
 @Entity()
 export class Artist {
@@ -49,6 +50,9 @@ export class Artist {
 
   @OneToMany(() => Tip, (tip) => tip.artist)
   tips: Tip[];
+
+  @OneToMany(() => Bid, (bid) => bid.artist)
+  bids: Bid[];
 
   @ManyToMany(() => User, (user) => user.following)
   followers: User[];

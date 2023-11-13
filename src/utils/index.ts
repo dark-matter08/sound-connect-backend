@@ -8,3 +8,17 @@ export const isValidPhoneNumber = (phoneNumber: string): boolean => {
 export interface CustomRequest extends Request {
   user: User;
 }
+
+export function dateToCronExpression(date: Date): string {
+  const second = date.getSeconds();
+  const minute = date.getMinutes();
+  const hour = date.getHours();
+  const dayOfMonth = date.getDate();
+  const month = date.getMonth() + 1; // Months are 0-indexed in JavaScript
+  const year = date.getFullYear();
+
+  // Construct the cron expression
+  const cronExpression = `${second} ${minute} ${hour} ${dayOfMonth} ${month} ${year}`;
+
+  return cronExpression;
+}

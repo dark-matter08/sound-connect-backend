@@ -14,6 +14,8 @@ import {
   JoinTable,
   OneToMany,
 } from 'typeorm';
+import { Balance } from 'src/core/balance/entities/balance.entity';
+import { Event } from 'src/modules/event/entities/event.entity';
 
 @Entity()
 export class User {
@@ -64,9 +66,16 @@ export class User {
   @OneToOne(() => Artist, (artist) => artist.user)
   artist: Artist;
 
+  @OneToOne(() => Balance, (balance) => balance.user)
+  balance: Balance;
+
   @ApiProperty()
   @OneToOne(() => RecordLabel, (recordLabel) => recordLabel.user)
   recordLabel: RecordLabel;
+
+  @ApiProperty()
+  @OneToMany(() => Event, (event) => event.createdBy)
+  events: Event;
 
   @ApiProperty()
   @CreateDateColumn()

@@ -46,3 +46,31 @@ export enum ContentType {
   PAID = 'PAID',
   FREE = 'FREE',
 }
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+}
+
+export enum PaymentType {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
+}
+
+export enum TransactionChannel {
+  TIPS = 'TIPS',
+  MOMO = 'MOMO',
+  BIDS = 'BIDS',
+}
+
+export enum PaymentMethod {
+  MOMO = 'MOMO',
+  BALANCE = 'BALANCE',
+}
+
+export enum BidStatus {
+  WON = 'WON',
+  LOST = 'LOST',
+  ONGOING = 'ONGOING',
+}

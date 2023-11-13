@@ -1,17 +1,24 @@
 // tip.service.ts
 
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tip } from './entities/tip.entity';
 import { UserService } from '../user/user.service';
 import { ArtistService } from '../artist/artist.service';
+import { BalanceService } from 'src/core/balance/balance.service';
+import { PaymentMethod, TransactionChannel } from 'src/constants';
 
 @Injectable()
 export class TipingService {
   constructor(
     private userService: UserService,
     private artistService: ArtistService,
+    private balanceService: BalanceService,
     @InjectRepository(Tip)
     private tipRepository: Repository<Tip>,
   ) {}
@@ -21,16 +28,21 @@ export class TipingService {
     artistId: number,
     amount: number,
     message: string,
+    paymentMethod: PaymentMethod,
   ): Promise<Tip> {
     const artistExists = await this.artistService.findById(artistId);
     const senderExists = await this.userService.findById(senderId);
 
     if (!artistExists) {
-      throw new Error('Artist does not exist');
+      throw new BadRequestException('Artist does not exist');
     }
 
     if (!senderExists) {
-      throw new Error('Sender does not exist');
+      throw new BadRequestException('Sender does not exist');
+    }
+
+    if (artistExists.id === senderExists.artistId) {
+      throw new ConflictException('You cannot tip yourself');
     }
     const tip = this.tipRepository.create({
       sender: { id: senderId },
@@ -38,6 +50,25 @@ export class TipingService {
       amount,
       message,
     });
+
+    const charge = 0.05;
+    const amountPaidOut = amount - amount * charge;
+
+    await this.balanceService.addBalance(
+      amountPaidOut,
+      artistExists.userId,
+      TransactionChannel.BIDS,
+      senderExists.id,
+    );
+
+    if (paymentMethod === PaymentMethod.BALANCE) {
+      await this.balanceService.withdrawBalance(
+        amountPaidOut,
+        senderExists.id,
+        TransactionChannel.BIDS,
+        artistExists.userId,
+      );
+    }
     return await this.tipRepository.save(tip);
   }
 
@@ -45,7 +76,7 @@ export class TipingService {
     const artistExists = await this.artistService.findById(artistId);
 
     if (!artistExists) {
-      throw new Error('Artist does not exist');
+      throw new BadRequestException('Artist does not exist');
     }
     return this.tipRepository.find({
       where: { artist: { id: artistId } },
@@ -53,6 +84,11 @@ export class TipingService {
   }
 
   async getTotalArtistTips(artistId: number): Promise<number> {
+    const artistExists = await this.artistService.findById(artistId);
+
+    if (!artistExists) {
+      throw new BadRequestException('Artist does not exist');
+    }
     const totalTips = await this.tipRepository
       .createQueryBuilder('tip')
       .select('SUM(tip.amount)', 'total')

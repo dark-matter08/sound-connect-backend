@@ -2,8 +2,11 @@
 
 import { Controller, Post, Param, Body, Get } from '@nestjs/common';
 import { TipingService } from './tiping.service';
+import { ApiTags } from '@nestjs/swagger';
+import { PaymentMethod } from 'src/constants';
 
 @Controller('tips')
+@ApiTags('Tips')
 export class TipingController {
   constructor(private readonly tipService: TipingService) {}
 
@@ -13,12 +16,14 @@ export class TipingController {
     @Param('artistId') artistId: number,
     @Body('amount') amount: number,
     @Body('message') message: string,
+    @Body('paymentMethod') paymentMethod: PaymentMethod,
   ) {
     const tip = await this.tipService.tipArtist(
       senderId,
       artistId,
       amount,
       message,
+      paymentMethod,
     );
     return { success: true, tip };
   }

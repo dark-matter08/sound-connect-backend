@@ -36,8 +36,6 @@ export class ArtistService {
   }
 
   async findById(id: number): Promise<Artist | undefined> {
-    console.log(id);
-
     const artist = await this.artistRepository.findOne({
       where: {
         id,
@@ -50,7 +48,6 @@ export class ArtistService {
         genres: true,
       },
     });
-    console.log(artist);
 
     if (!artist) {
       throw new NotFoundException('Artist not found');
