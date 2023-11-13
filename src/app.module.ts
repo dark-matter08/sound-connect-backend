@@ -8,6 +8,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfigAsync } from './config/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
 import { RecordLabelModule } from './modules/record-label/record-label.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { multerOptions } from './config/multer.config';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { RecordLabelModule } from './modules/record-label/record-label.module';
     AuthModule,
     UserModule,
     RecordLabelModule,
+    MulterModule.register(multerOptions),
   ],
   controllers: [AppController],
   providers: [AppService],

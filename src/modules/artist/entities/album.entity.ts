@@ -7,6 +7,8 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Artist } from './artist.entity';
 import { Song } from './song.entity';
@@ -34,7 +36,7 @@ export class Album {
   @Column({ nullable: true })
   bio: string;
 
-  @ApiProperty()
+  // @ApiProperty()
   @ManyToOne(() => Artist, (artist) => artist.albums)
   @JoinColumn({ name: 'artist_id' })
   artist: Artist;
@@ -42,4 +44,12 @@ export class Album {
   @ApiProperty()
   @OneToMany(() => Song, (song) => song.album)
   songs: Song[];
+
+  @ApiProperty()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ApiProperty()
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

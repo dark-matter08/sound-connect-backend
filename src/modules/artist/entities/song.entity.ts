@@ -6,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Artist } from './artist.entity';
 import { Album } from './album.entity';
@@ -33,7 +35,7 @@ export class Song {
   @Column({ nullable: true })
   albumId: number;
 
-  @ApiProperty()
+  // @ApiProperty()
   @ManyToOne(() => Artist, (artist) => artist.songs)
   @JoinColumn({ name: 'artist_id' })
   artist: Artist;
@@ -42,4 +44,12 @@ export class Song {
   @ManyToOne(() => Album, (album) => album.songs)
   @JoinColumn({ name: 'album_id' })
   album: Album;
+
+  @ApiProperty()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ApiProperty()
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

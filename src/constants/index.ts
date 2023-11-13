@@ -15,3 +15,29 @@ export interface JWTResponse {
   accessToken: string;
   refreshToken?: string;
 }
+
+// music-genre.enum.ts
+
+export enum MusicGenre {
+  POP = 'Pop',
+  ROCK = 'Rock',
+  HIP_HOP = 'Hip Hop',
+  COUNTRY = 'Country',
+  EDM = 'Electronic Dance Music',
+  R_AND_B = 'R&B',
+  JAZZ = 'Jazz',
+  CLASSICAL = 'Classical',
+  REGGAE = 'Reggae',
+  BLUES = 'Blues',
+  METAL = 'Metal',
+  ALTERNATIVE = 'Alternative',
+  INDIE = 'Indie',
+  LATIN = 'Latin',
+  FUNK = 'Funk',
+  SOUL = 'Soul',
+  PUNK = 'Punk',
+  DISCO = 'Disco',
+  GOSPEL = 'Gospel',
+  K_POP = 'K-Pop',
+  J_POP = 'J-Pop',
+}

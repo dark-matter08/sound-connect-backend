@@ -10,6 +10,8 @@ import {
   OneToMany,
   OneToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -38,4 +40,12 @@ export class RecordLabel {
   @OneToOne(() => User, (user) => user.recordLabel)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @ApiProperty()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ApiProperty()
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -7,11 +7,14 @@ import {
   JoinColumn,
   OneToMany,
   ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Song } from './song.entity';
 import { Album } from './album.entity';
 import { RecordLabel } from 'src/modules/record-label/entities/record-label.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { MusicGenre } from 'src/constants';
 
 @Entity()
 export class Artist {
@@ -28,8 +31,12 @@ export class Artist {
   stageName: string;
 
   @ApiProperty()
-  @Column({ length: 100, nullable: true })
-  genre: string;
+  @Column({
+    type: 'enum',
+    enum: MusicGenre,
+    default: MusicGenre.POP,
+  })
+  genre: MusicGenre;
 
   @ApiProperty()
   @Column({ type: 'text', nullable: true })
@@ -56,4 +63,12 @@ export class Artist {
   @OneToOne(() => User, (user) => user.artist)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @ApiProperty()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ApiProperty()
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

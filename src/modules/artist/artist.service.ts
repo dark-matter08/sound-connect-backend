@@ -7,12 +7,17 @@ import { Artist } from './entities/artist.entity';
 import { Song } from './entities/song.entity';
 import { Album } from './entities/album.entity';
 import { RecordLabel } from '../record-label/entities/record-label.entity';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class ArtistService {
   constructor(
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
+    @InjectRepository(Album)
+    private albumRepository: Repository<Album>,
+    @InjectRepository(Song)
+    private songRepository: Repository<Song>,
   ) {}
 
   async findAll(): Promise<Artist[]> {
@@ -33,7 +38,7 @@ export class ArtistService {
     });
   }
 
-  async create(artistData: Partial<Artist>): Promise<Artist> {
+  async create(user: User, artistData: Partial<Artist>): Promise<Artist> {
     const artist = this.artistRepository.create(artistData);
     return await this.artistRepository.save(artist);
   }
@@ -98,5 +103,53 @@ export class ArtistService {
       },
     });
     return artist ? artist.recordLabel : undefined;
+  }
+
+  //
+
+  async createAlbum(
+    artistId: number,
+    albumData: Partial<Album>,
+  ): Promise<Album> {
+    const artist = await this.artistRepository.findOne({
+      where: {
+        id: artistId,
+      },
+    });
+    if (!artist) {
+      throw new NotFoundException(`Artist with ID ${artistId} not found`);
+    }
+
+    const album = this.albumRepository.create(albumData);
+    album.artist = artist;
+
+    return await this.albumRepository.save(album);
+  }
+
+  async addSong(
+    artistId: number,
+    songData: Partial<Song>,
+    file: Express.Multer.File,
+    albumId?: number,
+  ): Promise<any> {
+    const artist = await this.artistRepository.findOne({
+      where: {
+        id: artistId,
+      },
+    });
+    if (!artist) {
+      throw new NotFoundException(`Artist with ID ${artistId} not found`);
+    }
+
+    if (albumId) {
+      const album = await this.albumRepository.findOne({
+        where: { id: albumId },
+      });
+      if (!album) {
+        throw new NotFoundException(`Album with ID ${albumId} not found`);
+      }
+    }
+
+    console.log(file);
   }
 }
