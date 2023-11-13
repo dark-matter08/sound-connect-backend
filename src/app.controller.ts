@@ -12,7 +12,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('uploads/:filename')
+  @Get('/public/uploads/:filename')
   streamFile(@Param('filename') filename: string, @Res() res: Response): void {
     const file = createReadStream(
       join(__dirname, '..', 'public', 'uploads', filename),
