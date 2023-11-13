@@ -35,8 +35,10 @@ export class ArtistService {
     return this.artistRepository.find();
   }
 
-  async findOne(id: number): Promise<Artist | undefined> {
-    return this.artistRepository.findOne({
+  async findById(id: number): Promise<Artist | undefined> {
+    console.log(id);
+
+    const artist = await this.artistRepository.findOne({
       where: {
         id,
       },
@@ -45,8 +47,16 @@ export class ArtistService {
         songs: true,
         albums: true,
         recordLabel: true,
+        genres: true,
       },
     });
+    console.log(artist);
+
+    if (!artist) {
+      throw new NotFoundException('Artist not found');
+    }
+
+    return artist;
   }
 
   async findByGenre(genreId: number): Promise<Artist[]> {
@@ -62,6 +72,62 @@ export class ArtistService {
         genres: true,
       },
     });
+  }
+
+  async getArtistAlbumsByGenre(
+    genreId: number,
+    artistId: number,
+  ): Promise<Album[]> {
+    const artist = await this.artistRepository.findOne({
+      where: {
+        id: artistId,
+      },
+    });
+
+    if (!artist) {
+      throw new NotFoundException('Artist not found');
+    }
+
+    const albums = await this.albumRepository.find({
+      where: {
+        artist: artist,
+        genres: { id: genreId },
+      },
+      relations: {
+        artist: true,
+        genres: true,
+      },
+    });
+
+    return albums;
+  }
+
+  async getArtistSongsByGenre(
+    genreId: number,
+    artistId: number,
+  ): Promise<Song[]> {
+    const artist = await this.artistRepository.findOne({
+      where: {
+        id: artistId,
+      },
+    });
+
+    if (!artist) {
+      throw new NotFoundException('Artist not found');
+    }
+
+    const songs = await this.songRepository.find({
+      where: {
+        artist: artist,
+        genres: { id: genreId },
+      },
+      relations: {
+        artist: true,
+        genres: true,
+      },
+    });
+
+    return songs;
   }
 
   async create(user: User, artistData: ArtistAddDto): Promise<Artist> {

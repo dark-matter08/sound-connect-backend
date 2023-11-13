@@ -32,7 +32,7 @@ export class RecordLabel {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @ApiProperty()
+  // @ApiProperty()
   @OneToMany(() => Artist, (artist) => artist.recordLabel)
   artists: Artist[];
 

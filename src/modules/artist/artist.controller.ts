@@ -134,7 +134,7 @@ export class ArtistController {
   })
   @Get('/:id')
   async getArtistById(@Param('id', ParseIntPipe) id: number): Promise<Artist> {
-    return this.artistService.findOne(id);
+    return this.artistService.findById(id);
   }
 
   @ApiResponse({
@@ -167,5 +167,31 @@ export class ArtistController {
   @Get('/genre/:genreId')
   async getArtistByGenre(@Param('genreId') genreId: number): Promise<Artist[]> {
     return this.artistService.findByGenre(genreId);
+  }
+
+  @ApiResponse({
+    description: 'Get artist albums by genre',
+    type: Album,
+    isArray: true,
+  })
+  @Get('/:artistId/genre/:genreId/albums')
+  async getArtistAlbumsByGenre(
+    @Param('genreId', ParseIntPipe) genreId: number,
+    @Param('artistId', ParseIntPipe) artistId: number,
+  ): Promise<Album[]> {
+    return this.artistService.getArtistAlbumsByGenre(genreId, artistId);
+  }
+
+  @ApiResponse({
+    description: 'Get artist songs by genre',
+    type: Song,
+    isArray: true,
+  })
+  @Get('/:artistId/genre/:genreId/songs')
+  async getArtistSongsByGenre(
+    @Param('genreId', ParseIntPipe) genreId: number,
+    @Param('artistId', ParseIntPipe) artistId: number,
+  ): Promise<Song[]> {
+    return this.artistService.getArtistSongsByGenre(genreId, artistId);
   }
 }

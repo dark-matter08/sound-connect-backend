@@ -37,7 +37,8 @@ export class GenreModule implements OnModuleInit {
 
     for (const genre of predefinedGenres) {
       const existingGenre = await this.musicGenreService.findGenreByName(genre);
-      if (existingGenre) {
+
+      if (!existingGenre) {
         await this.musicGenreService.createGenre(genre);
       }
     }
