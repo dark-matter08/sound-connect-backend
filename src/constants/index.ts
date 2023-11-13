@@ -4,3 +4,8 @@ export enum Role {
   VENUE = 'VENUE',
   LABEL = 'LABEL',
 }
+
+export interface JWtPayload {
+  id: number;
+  role: Role;
+}
