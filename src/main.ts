@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { publicPath } from './config/multer.config';
 import { ValidationPipe } from '@nestjs/common';
-
+import * as express from 'express';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -14,12 +14,13 @@ async function bootstrap() {
       "The application programming interface for cameroon's biggest digital agregator",
     )
     .setVersion('1.0')
-    .addTag('cats')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.useStaticAssets(publicPath, { prefix: publicPath });
+  // app.useStaticAssets(__dirname + '.../' + publicPath, { prefix: publicPath });
+  app.use('/public', express.static('public'));
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(process.env.PORT);
 }

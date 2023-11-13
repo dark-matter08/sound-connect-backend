@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ArtistModule } from './modules/artist/artist.module';
@@ -8,8 +8,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfigAsync } from './config/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
 import { RecordLabelModule } from './modules/record-label/record-label.module';
-import { MulterModule } from '@nestjs/platform-express';
-import { multerOptions } from './config/multer.config';
+import { MulterConfigModule } from './core/multer-config/multer-config.module';
+import { LoggerMiddleware } from './middleware/logger/logger.middleware';
 
 @Module({
   imports: [
@@ -19,9 +19,13 @@ import { multerOptions } from './config/multer.config';
     AuthModule,
     UserModule,
     RecordLabelModule,
-    MulterModule.register(multerOptions),
+    MulterConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

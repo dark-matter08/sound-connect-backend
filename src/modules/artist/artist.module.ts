@@ -5,10 +5,11 @@ import { Artist } from './entities/artist.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Album } from './entities/album.entity';
 import { Song } from './entities/song.entity';
+import { UserModule } from '../user/user.module';
 
 @Module({
   providers: [ArtistService],
   controllers: [ArtistController],
-  imports: [TypeOrmModule.forFeature([Artist, Album, Song])],
+  imports: [TypeOrmModule.forFeature([Artist, Album, Song]), UserModule],
 })
 export class ArtistModule {}

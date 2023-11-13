@@ -16,8 +16,8 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async findById(id: number, role: Role): Promise<User> {
-    return await this.userRepository.findOne({
+  async findById(id: number, role?: Role): Promise<User> {
+    const user = await this.userRepository.findOne({
       where: {
         id: id,
       },
@@ -25,6 +25,9 @@ export class UserService {
         artist: role === Role.ARTIST,
       },
     });
+
+    console.log(role, '===');
+    return user;
   }
 
   async findUser(param: string): Promise<User> {
@@ -48,11 +51,13 @@ export class UserService {
   ): Promise<User> {
     const findUser = await this.findUser(phone);
     if (findUser) {
-      throw new BadRequestException();
+      throw new BadRequestException(
+        'Account already exists with this Phone number',
+      );
     } else {
       const findEmail = await this.findUser(email);
       if (findEmail) {
-        throw new BadRequestException();
+        throw new BadRequestException('Account already exists with this email');
       }
     }
 
@@ -71,5 +76,9 @@ export class UserService {
         'An error occured while trying to create account. please try again later',
       );
     }
+  }
+
+  async update(updateData: Partial<User>) {
+    return await this.userRepository.save(updateData);
   }
 }

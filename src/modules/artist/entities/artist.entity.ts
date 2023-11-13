@@ -9,6 +9,7 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
 } from 'typeorm';
 import { Song } from './song.entity';
 import { Album } from './album.entity';
@@ -45,6 +46,9 @@ export class Artist {
   @ApiProperty()
   @Column({ nullable: true })
   recordLabelId: number;
+
+  @ManyToMany(() => User, (user) => user.following)
+  followers: User[];
 
   @ApiProperty()
   @ManyToOne(() => RecordLabel, (recordLabel) => recordLabel.artists)

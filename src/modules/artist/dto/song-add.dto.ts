@@ -7,9 +7,5 @@ export class SongAddDto {
   title: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  artistId: string;
-
-  @ApiProperty()
-  albumId: string;
+  albumId: number;
 }

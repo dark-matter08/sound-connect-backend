@@ -1,6 +1,11 @@
 // artist.service.ts
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Artist } from './entities/artist.entity';
@@ -8,10 +13,13 @@ import { Song } from './entities/song.entity';
 import { Album } from './entities/album.entity';
 import { RecordLabel } from '../record-label/entities/record-label.entity';
 import { User } from '../user/entities/user.entity';
+import { Role } from 'src/constants';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ArtistService {
   constructor(
+    private userService: UserService,
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
     @InjectRepository(Album)
@@ -39,8 +47,32 @@ export class ArtistService {
   }
 
   async create(user: User, artistData: Partial<Artist>): Promise<Artist> {
-    const artist = this.artistRepository.create(artistData);
-    return await this.artistRepository.save(artist);
+    const existingArtist = await this.artistRepository.findOne({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    if (existingArtist) {
+      throw new BadRequestException(
+        'Artist profile has already been created for this user',
+      );
+    }
+
+    const newArtist = await this.artistRepository.save({
+      userId: user.id,
+      stageName: artistData.stageName,
+      genre: artistData.genre,
+      bio: artistData.bio,
+      recordLabelId: artistData.recordLabelId,
+    });
+
+    user.artistId = newArtist.id;
+    user.role = Role.ARTIST;
+
+    await this.userService.update(user);
+
+    return newArtist;
   }
 
   async update(
@@ -130,6 +162,7 @@ export class ArtistService {
     artistId: number,
     songData: Partial<Song>,
     file: Express.Multer.File,
+    host: string,
     albumId?: number,
   ): Promise<any> {
     const artist = await this.artistRepository.findOne({
@@ -150,6 +183,29 @@ export class ArtistService {
       }
     }
 
-    console.log(file);
+    const existingSong = await this.songRepository.findOne({
+      where: {
+        artistId: artistId,
+        title: songData.title,
+      },
+    });
+
+    if (existingSong) {
+      throw new ConflictException(
+        `Song with title ${songData.title} already exists for this artist`,
+      );
+    }
+
+    const fileUrl = host + '/' + file.path;
+    console.log(fileUrl);
+
+    const newSong = await this.songRepository.save({
+      title: songData.title,
+      albumId: albumId,
+      artistId: artistId,
+      url: fileUrl,
+    });
+
+    return newSong;
   }
 }

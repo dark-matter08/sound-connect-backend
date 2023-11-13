@@ -9,6 +9,8 @@ import {
   OneToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -44,6 +46,10 @@ export class User {
   @ApiProperty()
   @Column({ nullable: true })
   recordLabelId: number;
+
+  @ManyToMany(() => Artist, { cascade: true })
+  @JoinTable()
+  following: Artist[];
 
   @ApiProperty()
   @Column({ enum: Role, default: Role.CONSUMER, type: 'enum' })
