@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from 'src/constants';
 import { Artist } from 'src/modules/artist/entities/artist.entity';
+import { RecordLabel } from 'src/modules/record-label/entities/record-label.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -32,23 +33,35 @@ export class User {
   @ApiProperty()
   password: string;
 
-  @Column({ nullable: true })
   @ApiProperty()
+  @Column({ nullable: true })
   profilePic: string;
 
-  @Column({ enum: Role, default: Role.CONSUMER, type: 'enum' })
   @ApiProperty()
+  @Column({ nullable: true })
+  artistId: number;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  recordLabelId: number;
+
+  @ApiProperty()
+  @Column({ enum: Role, default: Role.CONSUMER, type: 'enum' })
   role: Role;
 
+  //   @ApiProperty()
   @OneToOne(() => Artist, (artist) => artist.user)
-  @ApiProperty()
   artist: Artist;
 
-  @CreateDateColumn()
   @ApiProperty()
+  @OneToOne(() => RecordLabel, (recordLabel) => recordLabel.user)
+  recordLabel: RecordLabel;
+
+  @ApiProperty()
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
   @ApiProperty()
+  @UpdateDateColumn()
   updatedAt: Date;
 }

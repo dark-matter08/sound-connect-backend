@@ -7,6 +7,7 @@ import { UserModule } from './modules/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfigAsync } from './config/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
+import { RecordLabelModule } from './modules/record-label/record-label.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ConfigModule } from '@nestjs/config';
     ArtistModule,
     AuthModule,
     UserModule,
+    RecordLabelModule,
   ],
   controllers: [AppController],
   providers: [AppService],

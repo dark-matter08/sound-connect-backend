@@ -27,13 +27,17 @@ export class UserService {
     });
   }
 
-  async findUser(phoneEmail: string): Promise<User> {
-    return await this.userRepository.findOne({
-      where: {
-        phone: phoneEmail,
-        email: phoneEmail,
-      },
-    });
+  async findUser(param: string): Promise<User> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.phone = :phone OR user.email = :email', {
+        phone: param,
+        email: param,
+      })
+      .getOne();
+
+    return user;
   }
 
   async create(

@@ -20,7 +20,9 @@ export class AuthService {
     const user = await this.userService.findUser(phoneEmail);
 
     if (!user) {
-      throw new BadRequestException();
+      throw new BadRequestException(
+        'This user does not exist, try creating an account',
+      );
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
